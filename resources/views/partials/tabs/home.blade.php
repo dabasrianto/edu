@@ -24,36 +24,23 @@
                         </div>
                     </div>
                 @endif
-                <!-- Bagian Sapaan Pengguna -->
-                <section class="bg-white p-4 md:p-6 shadow-sm flex justify-between items-center">
-                    <div>
-                        <p class="text-gray-600 text-sm md:text-base">{{ $appSettings->home_config['greeting'] ?? 'Assalamualaikum,' }}</p>
+                <!-- Header Beranda -->
+                <div class="bg-emerald-700 text-white p-6 -mt-1 shadow-inner relative overflow-hidden">
+                    <div class="relative z-10">
+                        <p class="text-emerald-100 text-xs mt-1">{{ $appSettings->home_config['greeting'] ?? 'Assalamualaikum,' }}</p>
                         @auth
-                            <h2 class="text-2xl md:text-3xl font-bold text-gray-900">{{ Auth::user()->name }}</h2>
-                            <p class="text-gray-500 text-base md:text-lg">{{ Auth::user()->nip ?? '-' }}</p>
+                            <h2 class="text-xl font-bold">{{ Auth::user()->name }}</h2>
+                            <p class="text-emerald-100 text-xs mt-1">{{ $appSettings->home_config['balance_label'] ?? 'Saldo' }}: Rp {{ number_format(Auth::user()->balance ?? 0, 0, ',', '.') }}</p>
                         @else
-                            <h2 class="text-2xl md:text-3xl font-bold text-gray-900">Tamu</h2>
-                            <p class="text-gray-500 text-base md:text-lg">Silakan Login</p>
+                            <h2 class="text-xl font-bold">Tamu</h2>
+                            <p class="text-emerald-100 text-xs mt-1">Silakan Login untuk melanjutkan</p>
                         @endauth
                     </div>
-                    <!-- Saldo Display (Home) -->
-                    <!-- Saldo & Cart Display (Home) -->
-                    <div class="flex items-center space-x-3 md:space-x-4 text-right">
-                        <div>
-                            <p class="text-xs md:text-sm text-gray-500 mb-1">{{ $appSettings->home_config['balance_label'] ?? 'Saldo Dompet' }}</p>
-                            <span class="inline-block bg-blue-50 text-blue-700 font-bold px-3 py-1.5 rounded-lg border border-blue-100 text-sm md:text-base">
-                                Rp {{ number_format(Auth::user()->balance ?? 0, 0, ',', '.') }}
-                            </span>
-                        </div>
-                        
-                         <!-- Cart Icon -->
-                        <button onclick="switchTab('cart')" class="relative p-2 md:p-2.5 bg-white rounded-full border border-gray-100 shadow-sm text-gray-600 hover:text-blue-600 transition-colors">
-                            @svg('heroicon-o-shopping-bag', 'w-6 h-6 md:w-7 md:h-7')
-                            <span id="cart-badge-count" class="cart-badge absolute -top-1 -right-1 items-center justify-center min-w-[16px] h-4 px-1 text-[9px] font-bold leading-none text-white bg-red-600 rounded-full hidden">0</span>
-                        </button>
-                        <script>document.addEventListener('DOMContentLoaded', window.updateCartBadge);</script>
-                    </div>
-                </section>
+                    <!-- Dekorasi background (sama persis dgn Akademi & Reguler) -->
+                    <div class="absolute right-[-20px] top-[-20px] w-32 h-32 bg-white opacity-5 rounded-full"></div>
+                    <div class="absolute right-[40px] bottom-[-30px] w-24 h-24 bg-white opacity-10 rounded-full"></div>
+                </div>
+                <script>document.addEventListener('DOMContentLoaded', () => { if(window.updateCartBadge) window.updateCartBadge(); });</script>
 
                 <!-- Bagian Slider/Carousel -->
                 <!-- Bagian Slider/Carousel -->

@@ -8,7 +8,7 @@
     <!-- PWA -->
     <link rel="manifest" href="/manifest.json">
     <meta name="theme-color" content="#1e3a8a">
-    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="apple-touch-icon" href="{{ ($appSettings->logo_path ?? null) ? Storage::url($appSettings->logo_path) : 'https://ui-avatars.com/api/?name=Edu+HSI&background=1e3a8a&color=fff&size=192' }}">
     <link rel="icon" href="{{ ($appSettings->logo_path ?? null) ? Storage::url($appSettings->logo_path) : 'https://ui-avatars.com/api/?name=Edu+HSI&background=1e3a8a&color=fff&size=32' }}">
