@@ -16,7 +16,6 @@
     @include('partials.styles')
 </head>
 <body class="bg-gray-100 text-gray-800 antialiased">
-<body class="bg-gray-100 text-gray-800 antialiased">
     
     @php
         $appSettings = $appSettings ?? \App\Models\AppSetting::first() ?? (object)[];
