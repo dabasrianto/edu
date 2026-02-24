@@ -8,7 +8,7 @@ class AppSettingController extends Controller
 {
     public function update(Request $request)
     {
-        $settings = \App\Models\AppSetting::firstOrCreate([], ['id' => 1]);
+        $settings = \App\Models\AppSetting::firstOrCreate(['key' => 'main_settings']);
         
         $data = $request->validate([
             'logo' => 'nullable|image|max:2048',
@@ -20,6 +20,8 @@ class AppSettingController extends Controller
             'wp_sync_url' => 'nullable|url',
             'wp_sync_category_id' => 'nullable|exists:categories,id',
             'wp_sync_limit' => 'nullable|integer|min:1|max:100',
+            'otp_login' => 'nullable|boolean',
+            'otp_register' => 'nullable|boolean',
         ]);
 
         if ($request->hasFile('logo')) {
@@ -46,7 +48,15 @@ class AppSettingController extends Controller
         $blogConfig['wp_sync_limit'] = $data['wp_sync_limit'] ?? 10;
         $settings->blog_config = $blogConfig;
 
+        $settings->otp_config = [
+            'otp_login' => $request->has('otp_login'),
+            'otp_register' => $request->has('otp_register'),
+        ];
+
         $settings->save();
+
+        // Clear cache so frontend picks up changes
+        \Illuminate\Support\Facades\Cache::forget('app_settings');
 
         return redirect()->back()->with('success', 'Pengaturan berhasil disimpan.');
     }

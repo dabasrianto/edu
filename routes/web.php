@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\RegisterController as AuthRegisterController;
 use App\Http\Controllers\RegisterController as RootRegisterController;
 use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Auth\OTPController;
 // Google Login Routes (Removed)
 use App\Http\Controllers\BannerController;
 use App\Http\Controllers\CertificateController;
@@ -12,6 +13,7 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\QuizController;
 use App\Http\Controllers\LeaderboardController;
 use App\Http\Controllers\AppSettingController;
+use App\Http\Controllers\EmailSettingController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\CartController;
@@ -26,6 +28,8 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/leaderboard/load-more', [LeaderboardController::class, 'loadMore'])->name('leaderboard.loadMore');
 
 Route::post('/admin/settings/update', [AppSettingController::class, 'update'])->middleware('auth')->name('admin.settings.update');
+Route::post('/admin/email/update', [EmailSettingController::class, 'update'])->middleware('auth')->name('admin.email.update');
+Route::post('/admin/email/test', [EmailSettingController::class, 'sendTestEmail'])->middleware('auth')->name('admin.email.test');
 
 Route::post('/quiz/submit', [QuizController::class, 'submit'])->name('quiz.submit');
 Route::get('/quiz/result/{id}', [QuizController::class, 'show'])->name('quiz.result');
@@ -83,4 +87,8 @@ Route::post('/register', [RootRegisterController::class, 'registerUser'])->name(
 
 Route::get('/admin/register', [AuthRegisterController::class, 'showAdminForm'])->name('admin.register');
 Route::post('/admin/register', [AuthRegisterController::class, 'registerAdmin']);
+
+// OTP Routes
+Route::post('/otp/verify', [OTPController::class, 'verify'])->name('otp.verify');
+Route::post('/otp/resend', [OTPController::class, 'resend'])->name('otp.resend');
 

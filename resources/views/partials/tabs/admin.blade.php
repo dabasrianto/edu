@@ -152,6 +152,31 @@
                                          <input type="number" name="wp_sync_limit" value="{{ $appSettings->blog_config['wp_sync_limit'] ?? 10 }}" min="1" max="100" class="w-24 text-sm border-gray-300 rounded-lg p-2 border">
                                      </div>
                                 </div>
+
+                                <hr>
+
+                                <!-- OTP Config Section -->
+                                <div class="space-y-4 bg-blue-50/30 p-4 rounded-xl border border-blue-100">
+                                     <h4 class="font-bold text-gray-800 text-xs uppercase tracking-wider flex items-center">
+                                         @svg('heroicon-s-shield-check', 'w-4 h-4 mr-2 text-blue-600')
+                                         Keamanan OTP (Email)
+                                     </h4>
+                                     
+                                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                         <div class="flex items-center space-x-2">
+                                             <input type="checkbox" name="otp_login" id="otp_login" value="1" {{ ($appSettings->otp_config['otp_login'] ?? false) ? 'checked' : '' }} class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                                             <label for="otp_login" class="text-xs font-bold text-gray-700">Aktifkan OTP saat Login</label>
+                                         </div>
+                                         <div class="flex items-center space-x-2">
+                                             <input type="checkbox" name="otp_register" id="otp_register" value="1" {{ ($appSettings->otp_config['otp_register'] ?? false) ? 'checked' : '' }} class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                                             <label for="otp_register" class="text-xs font-bold text-gray-700">Aktifkan OTP saat Registrasi</label>
+                                         </div>
+                                     </div>
+                                     
+                                     <p class="text-[10px] text-gray-500 italic">
+                                         * Pastikan konfigurasi email (SMTP) di bagian "Konfigurasi Email" di bawah sudah benar agar email OTP dapat terkirim.
+                                     </p>
+                                </div>
                                 
                                 <button type="submit" class="w-full bg-blue-900 text-white font-bold py-3 rounded-xl hover:bg-blue-800 transition-colors shadow-md">
                                     Simpan Pengaturan
@@ -216,6 +241,95 @@
                                     + Tambah Banner
                                 </button>
                             </form>
+                        </div>
+                    </div>
+
+                    <!-- Section E: Konfigurasi Email / SMTP -->
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                        <div class="bg-gray-50 px-4 py-3 border-b border-gray-200">
+                             <h3 class="font-bold text-gray-800 flex items-center text-sm">
+                                @svg('heroicon-s-envelope', 'w-4 h-4 mr-2 text-purple-500')
+                                Konfigurasi Email (SMTP)
+                            </h3>
+                        </div>
+                        <div class="p-4">
+                            @php $emailCfg = $appSettings->email_config ?? []; @endphp
+                            <form action="{{ route('admin.email.update') }}" method="POST" class="space-y-4">
+                                @csrf
+                                
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                    <div>
+                                        <label class="block text-[10px] font-bold text-gray-500 mb-1 uppercase">Mailer</label>
+                                        <select name="mail_mailer" class="w-full text-sm border border-gray-300 rounded-lg p-2 focus:border-purple-500 outline-none bg-white">
+                                            <option value="smtp" {{ ($emailCfg['mail_mailer'] ?? 'smtp') == 'smtp' ? 'selected' : '' }}>SMTP</option>
+                                            <option value="sendmail" {{ ($emailCfg['mail_mailer'] ?? '') == 'sendmail' ? 'selected' : '' }}>Sendmail</option>
+                                            <option value="log" {{ ($emailCfg['mail_mailer'] ?? '') == 'log' ? 'selected' : '' }}>Log (Debug)</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label class="block text-[10px] font-bold text-gray-500 mb-1 uppercase">SMTP Host</label>
+                                        <input type="text" name="mail_host" value="{{ $emailCfg['mail_host'] ?? '' }}" placeholder="smtp.gmail.com" class="w-full text-sm border border-gray-300 rounded-lg p-2 focus:border-purple-500 outline-none">
+                                    </div>
+                                    <div>
+                                        <label class="block text-[10px] font-bold text-gray-500 mb-1 uppercase">Port</label>
+                                        <input type="number" name="mail_port" value="{{ $emailCfg['mail_port'] ?? 587 }}" placeholder="587" class="w-full text-sm border border-gray-300 rounded-lg p-2 focus:border-purple-500 outline-none">
+                                    </div>
+                                </div>
+
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="block text-[10px] font-bold text-gray-500 mb-1 uppercase">Username / Email</label>
+                                        <input type="text" name="mail_username" value="{{ $emailCfg['mail_username'] ?? '' }}" placeholder="user@gmail.com" class="w-full text-sm border border-gray-300 rounded-lg p-2 focus:border-purple-500 outline-none">
+                                    </div>
+                                    <div>
+                                        <label class="block text-[10px] font-bold text-gray-500 mb-1 uppercase">Password</label>
+                                        <input type="password" name="mail_password" value="" placeholder="{{ !empty($emailCfg['mail_password']) ? '••••••••' : 'App Password / SMTP Password' }}" class="w-full text-sm border border-gray-300 rounded-lg p-2 focus:border-purple-500 outline-none">
+                                        @if(!empty($emailCfg['mail_password']))
+                                            <p class="text-[9px] text-green-600 mt-1">✓ Password sudah tersimpan. Kosongkan jika tidak ingin mengubah.</p>
+                                        @endif
+                                    </div>
+                                </div>
+
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                    <div>
+                                        <label class="block text-[10px] font-bold text-gray-500 mb-1 uppercase">Enkripsi</label>
+                                        <select name="mail_encryption" class="w-full text-sm border border-gray-300 rounded-lg p-2 focus:border-purple-500 outline-none bg-white">
+                                            <option value="tls" {{ ($emailCfg['mail_encryption'] ?? 'tls') == 'tls' ? 'selected' : '' }}>TLS (Recommended)</option>
+                                            <option value="ssl" {{ ($emailCfg['mail_encryption'] ?? '') == 'ssl' ? 'selected' : '' }}>SSL</option>
+                                            <option value="null" {{ ($emailCfg['mail_encryption'] ?? '') === null ? 'selected' : '' }}>None</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label class="block text-[10px] font-bold text-gray-500 mb-1 uppercase">From Address</label>
+                                        <input type="email" name="mail_from_address" value="{{ $emailCfg['mail_from_address'] ?? '' }}" placeholder="noreply@domain.com" class="w-full text-sm border border-gray-300 rounded-lg p-2 focus:border-purple-500 outline-none">
+                                    </div>
+                                    <div>
+                                        <label class="block text-[10px] font-bold text-gray-500 mb-1 uppercase">From Name</label>
+                                        <input type="text" name="mail_from_name" value="{{ $emailCfg['mail_from_name'] ?? '' }}" placeholder="{{ config('app.name') }}" class="w-full text-sm border border-gray-300 rounded-lg p-2 focus:border-purple-500 outline-none">
+                                    </div>
+                                </div>
+
+                                <button type="submit" class="w-full bg-purple-700 text-white font-bold py-2.5 rounded-xl hover:bg-purple-800 transition-colors shadow-md text-sm">
+                                    Simpan Konfigurasi Email
+                                </button>
+                            </form>
+
+                            <hr class="my-4">
+
+                            <!-- Test Email Section -->
+                            <div class="bg-purple-50/30 p-4 rounded-xl border border-purple-100">
+                                <h4 class="font-bold text-gray-800 text-xs uppercase tracking-wider flex items-center mb-3">
+                                    @svg('heroicon-s-paper-airplane', 'w-4 h-4 mr-2 text-purple-600')
+                                    Kirim Email Percobaan
+                                </h4>
+                                <div class="flex items-center gap-2">
+                                    <input type="email" id="test-email-input" placeholder="email@contoh.com" class="flex-1 text-sm border border-gray-300 rounded-lg p-2 focus:border-purple-500 outline-none">
+                                    <button onclick="sendTestEmailAction()" id="btn-test-email" class="bg-purple-600 text-white text-xs font-bold px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors whitespace-nowrap">
+                                        Kirim Test
+                                    </button>
+                                </div>
+                                <div id="test-email-result" class="hidden mt-2 text-xs p-2 rounded-lg"></div>
+                            </div>
                         </div>
                     </div>
 
@@ -384,7 +498,7 @@
                              </form>
                         </div>
                     </div>
-                    
+
                     <!-- Flash Message -->
                     @if(session('success'))
                         <div class="bg-green-50 text-green-700 p-3 rounded-lg text-sm mt-4">
@@ -396,6 +510,56 @@
                     <div class="p-8 text-center text-gray-400 text-sm italic">
                         Fitur admin lainnya akan segera hadir di sini...
                     </div>
+
+                    <script>
+                        async function sendTestEmailAction() {
+                            const emailInput = document.getElementById('test-email-input');
+                            const btn = document.getElementById('btn-test-email');
+                            const result = document.getElementById('test-email-result');
+                            const email = emailInput.value.trim();
+
+                            if (!email) {
+                                alert('Masukkan email tujuan!');
+                                return;
+                            }
+
+                            btn.disabled = true;
+                            btn.innerText = 'Mengirim...';
+                            result.classList.add('hidden');
+
+                            try {
+                                const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+                                const response = await fetch("{{ route('admin.email.test') }}", {
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/json',
+                                        'X-CSRF-TOKEN': token,
+                                        'Accept': 'application/json'
+                                    },
+                                    body: JSON.stringify({ test_email: email })
+                                });
+
+                                const data = await response.json();
+                                result.classList.remove('hidden');
+
+                                if (data.success) {
+                                    result.className = 'mt-2 text-xs p-2 rounded-lg bg-green-50 text-green-700';
+                                    result.innerText = '✅ ' + data.message;
+                                } else {
+                                    result.className = 'mt-2 text-xs p-2 rounded-lg bg-red-50 text-red-700';
+                                    result.innerText = '❌ ' + data.message;
+                                }
+                            } catch (e) {
+                                result.classList.remove('hidden');
+                                result.className = 'mt-2 text-xs p-2 rounded-lg bg-red-50 text-red-700';
+                                result.innerText = '❌ Terjadi kesalahan koneksi.';
+                                console.error(e);
+                            } finally {
+                                btn.disabled = false;
+                                btn.innerText = 'Kirim Test';
+                            }
+                        }
+                    </script>
                 </div>
                 @else
                     <div class="flex flex-col items-center justify-center p-10 h-full text-center">

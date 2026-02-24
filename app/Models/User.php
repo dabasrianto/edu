@@ -32,6 +32,8 @@ class User extends Authenticatable implements FilamentUser
         'avatar',
         'google_id',
         'avatar_url',
+        'otp_code',
+        'otp_expires_at',
     ];
 
     /**
@@ -56,6 +58,7 @@ class User extends Authenticatable implements FilamentUser
             'password' => 'hashed',
             'balance' => 'decimal:2',
             'is_active' => 'boolean',
+            'otp_expires_at' => 'datetime',
         ];
     }
 

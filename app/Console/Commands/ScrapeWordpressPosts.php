@@ -31,7 +31,7 @@ class ScrapeWordpressPosts extends Command
      */
     public function handle()
     {
-        $settings = AppSetting::first();
+        $settings = AppSetting::firstOrCreate(['key' => 'main_settings']);
         $blogConfig = $settings->blog_config ?? [];
 
         $url = $this->argument('url') ?? (($blogConfig['wp_sync_enabled'] ?? false) ? ($blogConfig['wp_sync_url'] ?? null) : null);

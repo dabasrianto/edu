@@ -46,7 +46,7 @@ class HomeController extends Controller
 
         // We also need $appSettings for the view
         $appSettings = Cache::remember('app_settings', 60 * 60, function () {
-            return AppSetting::firstOrCreate([], ['id' => 1]);
+            return AppSetting::firstOrCreate(['key' => 'main_settings']);
         });
         
         // Quizzes (Heavy Query - Cached)

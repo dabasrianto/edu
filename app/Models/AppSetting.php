@@ -28,6 +28,8 @@ class AppSetting extends Model
         'login_header_text',
         'app_name',
         'app_slogan',
+        'otp_config',
+        'email_config',
     ];
 
     protected $casts = [
@@ -37,5 +39,7 @@ class AppSetting extends Model
         'blog_config' => 'array',
         'payment_config' => 'array',
         'google_login_enabled' => 'boolean',
+        'otp_config' => 'array',
+        'email_config' => 'array',
     ];
 }
