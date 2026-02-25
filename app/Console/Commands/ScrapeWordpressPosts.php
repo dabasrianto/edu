@@ -5,10 +5,13 @@ namespace App\Console\Commands;
 use App\Models\Post;
 use App\Models\Category;
 use App\Models\AppSetting;
+use App\Models\User;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Mews\Purifier\Facades\Purifier;
 
 class ScrapeWordpressPosts extends Command
 {
@@ -62,6 +65,12 @@ class ScrapeWordpressPosts extends Command
             }
 
             $wpPosts = $response->json();
+
+            if (!is_array($wpPosts)) {
+                $this->error('Unexpected response format from WordPress API.');
+                return 1;
+            }
+
             $count = 0;
 
             foreach ($wpPosts as $wpPost) {
@@ -83,23 +92,31 @@ class ScrapeWordpressPosts extends Command
                 
                 if ($imagePath === null && $imageUrl) {
                     try {
-                        $imageContent = Http::withoutVerifying()
+                        $imageResponse = Http::withoutVerifying()
                             ->withHeaders(['User-Agent' => 'Mozilla/5.0'])
-                            ->get($imageUrl)->body();
-                        $filename = 'posts/' . Str::random(10) . '_' . basename(parse_url($imageUrl, PHP_URL_PATH));
-                        Storage::disk('public')->put($filename, $imageContent);
-                        $imagePath = $filename;
+                            ->get($imageUrl);
+
+                        if ($imageResponse->successful()) {
+                            $baseName = Str::slug(pathinfo(parse_url($imageUrl, PHP_URL_PATH), PATHINFO_FILENAME));
+                            $ext = pathinfo(parse_url($imageUrl, PHP_URL_PATH), PATHINFO_EXTENSION) ?: 'jpg';
+                            $filename = 'posts/' . Str::random(10) . '_' . $baseName . '.' . $ext;
+                            Storage::disk('public')->put($filename, $imageResponse->body());
+                            $imagePath = $filename;
+                        } else {
+                            $this->warn("Image download failed ({$imageResponse->status()}): {$title}");
+                        }
                     } catch (\Exception $e) {
                         $this->warn("Could not download image for: {$title}");
                     }
                 }
 
                 $postData = [
-                    'title' => $title,
+                    'title' => strip_tags($title),
                     'slug' => $slug,
-                    'content' => $content,
+                    'content' => Purifier::clean($content),
                     'image' => $imagePath,
                     'category_id' => $categoryId ?? $this->getDefaultCategoryId(),
+                    'user_id' => User::where('role', 'admin')->value('id') ?? User::first()?->id,
                     'status' => 'published',
                     'type' => 'article',
                 ];
@@ -119,7 +136,7 @@ class ScrapeWordpressPosts extends Command
 
         } catch (\Exception $e) {
             $this->error("Error: " . $e->getMessage());
-            \Log::error("WP Sync Error: " . $e->getMessage());
+            Log::error('WP Sync Error: ' . $e->getMessage());
             return 1;
         }
 
