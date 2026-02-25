@@ -53,10 +53,11 @@ class LoginController extends Controller
                         'message' => 'Kode OTP telah dikirim ke email Anda.'
                     ]);
                 } catch (\Exception $e) {
-                    return response()->json([
-                        'success' => false,
-                        'message' => 'Gagal mengirim email OTP: ' . $e->getMessage()
-                    ], 500);
+                    // OTP email failed — clear OTP and fall through to normal login
+                    $user->otp_code = null;
+                    $user->otp_expires_at = null;
+                    $user->save();
+                    // Continue to normal login below
                 }
             }
 

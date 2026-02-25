@@ -33,6 +33,11 @@ class EmailOtpProvider implements MultiFactorAuthenticationProvider, HasBeforeCh
     }
 
     /**
+     * Track if OTP sending failed so we can skip the challenge.
+     */
+    public bool $sendFailed = false;
+
+    /**
      * Called before the challenge form is shown — we generate and send the OTP here.
      */
     public function beforeChallenge(Authenticatable $user): void
@@ -49,11 +54,18 @@ class EmailOtpProvider implements MultiFactorAuthenticationProvider, HasBeforeCh
         try {
             \App\Http\Controllers\EmailSettingController::applyDatabaseMailConfig();
             \Illuminate\Support\Facades\Mail::to($user->email)->send(new \App\Mail\OTPMail($otp));
+            $this->sendFailed = false;
         } catch (\Exception $e) {
+            // OTP email failed — clear OTP and allow login without MFA
+            $user->otp_code = null;
+            $user->otp_expires_at = null;
+            $user->save();
+            $this->sendFailed = true;
+
             Notification::make()
-                ->danger()
-                ->title('Gagal mengirim OTP')
-                ->body('Error: ' . $e->getMessage())
+                ->warning()
+                ->title('OTP dilewati')
+                ->body('Gagal mengirim email OTP. Login dilanjutkan tanpa OTP.')
                 ->send();
         }
     }
