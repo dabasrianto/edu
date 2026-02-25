@@ -560,6 +560,25 @@
                             }
                         }
                     </script>
+
+                    {{-- ===== NEW ADMIN SECTIONS ===== --}}
+
+                    @include('partials.admin.dashboard')
+
+                    @include('partials.admin.orders')
+
+                    @include('partials.admin.posts')
+
+                    @include('partials.admin.quizzes')
+
+                    @include('partials.admin.ai-settings')
+
+                    @include('partials.admin.users')
+
+                    @include('partials.admin.deposits')
+
+                    @include('partials.admin.scripts')
+
                 </div>
                 @else
                     <div class="flex flex-col items-center justify-center p-10 h-full text-center">

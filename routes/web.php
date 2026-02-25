@@ -92,3 +92,37 @@ Route::post('/admin/register', [AuthRegisterController::class, 'registerAdmin'])
 Route::post('/otp/verify', [OTPController::class, 'verify'])->name('otp.verify');
 Route::post('/otp/resend', [OTPController::class, 'resend'])->name('otp.resend');
 
+// Admin API Routes (Frontpage Admin Tab)
+Route::middleware(['auth'])->prefix('admin/api')->name('admin.api.')->group(function () {
+    Route::get('/stats', [\App\Http\Controllers\AdminApiController::class, 'dashboardStats'])->name('stats');
+
+    Route::get('/enrollments', [\App\Http\Controllers\AdminApiController::class, 'enrollments'])->name('enrollments');
+    Route::put('/enrollments/{id}', [\App\Http\Controllers\AdminApiController::class, 'updateEnrollmentStatus'])->name('enrollments.update');
+
+    Route::get('/orders', [\App\Http\Controllers\AdminApiController::class, 'orders'])->name('orders');
+    Route::put('/orders/{id}', [\App\Http\Controllers\AdminApiController::class, 'updateOrderStatus'])->name('orders.update');
+
+    Route::get('/posts', [\App\Http\Controllers\AdminApiController::class, 'posts'])->name('posts');
+    Route::post('/posts', [\App\Http\Controllers\AdminApiController::class, 'storePost'])->name('posts.store');
+    Route::post('/posts/{id}', [\App\Http\Controllers\AdminApiController::class, 'updatePost'])->name('posts.update');
+    Route::delete('/posts/{id}', [\App\Http\Controllers\AdminApiController::class, 'deletePost'])->name('posts.delete');
+
+    Route::get('/quizzes', [\App\Http\Controllers\AdminApiController::class, 'quizzes'])->name('quizzes');
+    Route::put('/quizzes/{id}', [\App\Http\Controllers\AdminApiController::class, 'updateQuiz'])->name('quizzes.update');
+    Route::delete('/quizzes/{id}', [\App\Http\Controllers\AdminApiController::class, 'deleteQuiz'])->name('quizzes.delete');
+
+    Route::get('/ai-settings', [\App\Http\Controllers\AdminApiController::class, 'aiSettings'])->name('ai');
+    Route::post('/ai-settings', [\App\Http\Controllers\AdminApiController::class, 'storeAiSetting'])->name('ai.store');
+    Route::put('/ai-settings/{id}', [\App\Http\Controllers\AdminApiController::class, 'updateAiSetting'])->name('ai.update');
+    Route::delete('/ai-settings/{id}', [\App\Http\Controllers\AdminApiController::class, 'deleteAiSetting'])->name('ai.delete');
+
+    Route::get('/users', [\App\Http\Controllers\AdminApiController::class, 'users'])->name('users');
+    Route::put('/users/{id}', [\App\Http\Controllers\AdminApiController::class, 'updateUser'])->name('users.update');
+    Route::delete('/users/{id}', [\App\Http\Controllers\AdminApiController::class, 'deleteUser'])->name('users.delete');
+
+    Route::get('/categories', [\App\Http\Controllers\AdminApiController::class, 'categories'])->name('categories');
+
+    Route::get('/deposits', [\App\Http\Controllers\AdminApiController::class, 'deposits'])->name('deposits');
+    Route::put('/deposits/{id}', [\App\Http\Controllers\AdminApiController::class, 'updateDeposit'])->name('deposits.update');
+});
+
