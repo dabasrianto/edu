@@ -47,6 +47,9 @@ class AdminPanelProvider extends PanelProvider
             ->authMiddleware([
                 \Illuminate\Auth\Middleware\Authenticate::class,
             ])
+            ->multiFactorAuthentication([
+                new \App\Filament\Auth\EmailOtpProvider(),
+            ])
             ->userMenuItems([
                 MenuItem::make()
                     ->label('Frontpage')
