@@ -8,12 +8,11 @@
         // Logika Tab Switching
         // Global function to switch tabs
         function switchTab(tabName) {
-            // Redirect to basic Filament Admin Panel
-            // Redirect check removed to allow frontend admin dashboard access
-            /* if (tabName === 'admin') {
+            // Redirect to Filament Admin Panel
+            if (tabName === 'admin') {
                 window.location.href = '/admin';
                 return;
-            } */
+            }
 
             // Simpan status tab terakhir
             localStorage.setItem('activeTab', tabName);
@@ -68,7 +67,7 @@
                 if (iconInactive) iconInactive.classList.remove('hidden');
             });
             
-            // Set Active Nav
+            // Set Active Nav (Bottom Nav)
             const navId = tabName.replace('view-', '');
             const activeNav = document.getElementById('nav-' + navId);
             if (activeNav) {
@@ -85,34 +84,52 @@
                 if (iconInactive) iconInactive.classList.add('hidden');
             }
 
+            // --- SIDEBAR NAV SYNC (Desktop) ---
+            document.querySelectorAll('.sidebar-nav-item').forEach(el => {
+                el.classList.remove('bg-blue-50', 'text-blue-900');
+                el.classList.add('text-gray-600');
+                const sideIconActive = el.querySelector('.sidebar-icon-active');
+                const sideIconInactive = el.querySelector('.sidebar-icon-inactive');
+                if (sideIconActive) sideIconActive.classList.add('hidden');
+                if (sideIconInactive) sideIconInactive.classList.remove('hidden');
+            });
+
+            const activeSidebar = document.getElementById('sidebar-nav-' + navId);
+            if (activeSidebar) {
+                activeSidebar.classList.remove('text-gray-600');
+                activeSidebar.classList.add('bg-blue-50', 'text-blue-900');
+                const sideIconActive = activeSidebar.querySelector('.sidebar-icon-active');
+                const sideIconInactive = activeSidebar.querySelector('.sidebar-icon-inactive');
+                if (sideIconActive) sideIconActive.classList.remove('hidden');
+                if (sideIconInactive) sideIconInactive.classList.add('hidden');
+            }
+
+            // --- UPDATE DESKTOP PAGE TITLE ---
+            const pageTitles = {
+                'home': 'Beranda',
+                'blog': 'Artikel',
+                'akademi': 'Akademi',
+                'reguler': 'Program Reguler',
+                'profil': 'Profil Saya',
+                'cart': 'Keranjang',
+                'admin': 'Halaman Admin',
+                'login': 'Login'
+            };
+            const titleEl = document.getElementById('desktop-page-title');
+            if (titleEl) {
+                titleEl.innerText = pageTitles[navId] || navId.charAt(0).toUpperCase() + navId.slice(1);
+            }
+
             // --- RESPONSIVE LAYOUT LOGIC ---
             try {
-                const appContainer = document.getElementById('app-container');
-                const bottomNav = document.getElementById('bottom-nav');
-                
-                if (appContainer) {
-                    if (tabName === 'admin') {
-                        appContainer.classList.remove('max-w-md');
-                        appContainer.classList.add('max-w-7xl', 'w-full', 'rounded-none', 'md:rounded-2xl', 'md:my-4');
-                        if(bottomNav) {
-                            bottomNav.classList.remove('max-w-md');
-                            bottomNav.classList.add('max-w-7xl', 'mx-auto', 'left-0', 'right-0');
-                        }
-                        // Fetch Enrollments for Admin
-                        if(typeof fetchEnrollments === 'function') {
-                            fetchEnrollments();
-                        }
-                    } else if (tabName === 'cart') {
-                        if(typeof loadCart === 'function') {
-                            loadCart();
-                        }
-                    } else {
-                        appContainer.classList.add('max-w-md');
-                        appContainer.classList.remove('max-w-7xl', 'w-full', 'rounded-none', 'md:rounded-2xl', 'md:my-4');
-                        if(bottomNav) {
-                            bottomNav.classList.add('max-w-md');
-                            bottomNav.classList.remove('max-w-7xl');
-                        }
+                if (tabName === 'admin') {
+                    // Fetch Enrollments for Admin
+                    if(typeof fetchEnrollments === 'function') {
+                        fetchEnrollments();
+                    }
+                } else if (tabName === 'cart') {
+                    if(typeof loadCart === 'function') {
+                        loadCart();
                     }
                 }
             } catch(e) { console.error("Layout resize error", e); }

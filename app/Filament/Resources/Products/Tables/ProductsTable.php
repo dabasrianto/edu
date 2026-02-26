@@ -15,6 +15,16 @@ class ProductsTable
             ->columns([
                 \Filament\Tables\Columns\ImageColumn::make('image'),
                 \Filament\Tables\Columns\TextColumn::make('name')->searchable()->sortable(),
+                \Filament\Tables\Columns\TextColumn::make('type')
+                    ->badge()
+                    ->color(fn (string $state): string => match ($state) {
+                        'digital' => 'info',
+                        default => 'success',
+                    })
+                    ->formatStateUsing(fn (string $state): string => match ($state) {
+                        'digital' => 'Digital',
+                        default => 'Fisik',
+                    }),
                 \Filament\Tables\Columns\TextColumn::make('price')->money('IDR')->sortable(),
                 \Filament\Tables\Columns\TextColumn::make('rating')->numeric(1)->sortable(),
                 \Filament\Tables\Columns\TextColumn::make('sold_count')->label('Sold'),

@@ -199,7 +199,7 @@
                         <h3 class="text-xl md:text-2xl font-bold text-gray-900">Berita Terbaru</h3>
                         <!-- <a href="#" class="text-sm text-blue-600 font-semibold">Lihat Semua</a> -->
                     </div>
-                    <div class="space-y-4 md:space-y-0 md:grid md:grid-cols-2 md:gap-4">
+                    <div class="space-y-4 md:space-y-0 md:grid md:grid-cols-2 lg:grid-cols-3 md:gap-4">
                         @if(isset($homePosts) && count($homePosts) > 0)
                             @foreach($homePosts as $post)
                                 @include('partials.post-item')
@@ -402,7 +402,7 @@
                         <span class="text-sm text-blue-600 font-semibold">Lihat Semua</span>
                     </div>
                     
-                    <div class="grid grid-cols-2 gap-4">
+                    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                         @if(isset($products) && count($products) > 0)
                             @foreach($products as $product)
                             <a href="{{ route('product.show', $product->id) }}" class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden group block">

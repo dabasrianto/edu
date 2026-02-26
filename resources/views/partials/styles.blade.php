@@ -2,13 +2,14 @@
     <!-- Tailwind CSS & JS (Vite) -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
-    <!-- Google Fonts: Inter -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Google Fonts -->
+    @php $fontFamily = $appSettings->font_family ?? 'Poppins'; @endphp
+    <link href="https://fonts.googleapis.com/css2?family={{ urlencode($fontFamily) }}:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     
     <!-- Custom Styles -->
     <style>
         body {
-            font-family: 'Inter', sans-serif;
+            font-family: '{{ $fontFamily }}', 'Inter', sans-serif;
             background-color: #f3f4f6; /* bg-gray-100 */
             -webkit-tap-highlight-color: transparent;
         }
@@ -62,6 +63,82 @@
         .layout-list {
             display: flex;
             flex-direction: row;
+        }
+
+        /* =============================== */
+        /* RESPONSIVE DESKTOP LAYOUT (CSS) */
+        /* =============================== */
+
+        /* Mobile: sidebar hidden, bottom nav visible */
+        #desktop-sidebar {
+            display: none;
+        }
+
+        /* Desktop: sidebar visible, bottom nav hidden, content wider */
+        @media (min-width: 768px) {
+            body {
+                background-color: #f8fafc;
+            }
+
+            /* App wrapper becomes flex row */
+            #app-wrapper {
+                display: flex;
+                min-height: 100vh;
+            }
+
+            /* Show sidebar */
+            #desktop-sidebar {
+                display: flex !important;
+                flex-direction: column;
+                width: 16rem; /* w-64 = 256px */
+                position: fixed;
+                top: 0;
+                left: 0;
+                bottom: 0;
+                z-index: 40;
+                background: #fff;
+                border-right: 1px solid #e5e7eb;
+                transition: transform 0.3s ease;
+            }
+
+            /* Desktop top bar */
+            .desktop-topbar {
+                display: flex !important;
+            }
+
+            /* Content area: offset by sidebar width, no max-w-md */
+            #app-container {
+                max-width: 100% !important;
+                margin-left: 16rem !important; /* match sidebar width */
+                background-color: #f8fafc;
+                box-shadow: none !important;
+            }
+
+            /* Tab content max width for readability */
+            #app-container .tab-content {
+                max-width: 1200px;
+                margin: 0 auto;
+            }
+
+            /* Hide bottom nav on desktop */
+            #bottom-nav {
+                display: none !important;
+            }
+
+            /* Reduce bottom padding (no bottom nav) */
+            #app-container > .pb-24 {
+                padding-bottom: 1.5rem !important;
+            }
+        }
+
+        /* Larger desktop: wider sidebar */
+        @media (min-width: 1024px) {
+            #desktop-sidebar {
+                width: 18rem; /* lg:w-72 = 288px */
+            }
+            #app-container {
+                margin-left: 18rem !important;
+            }
         }
     </style>
     

@@ -1,6 +1,6 @@
 
         <nav id="bottom-nav"
-    class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 flex justify-around items-center p-2 z-40 transition-transform duration-300 mx-auto w-full max-w-md md:max-w-2xl lg:max-w-3xl">
+    class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 flex justify-around items-center p-2 z-40 transition-transform duration-300 mx-auto w-full max-w-md md:hidden">
             
             @php
                 // Default Menu Config (Using Blade Heroicons names)

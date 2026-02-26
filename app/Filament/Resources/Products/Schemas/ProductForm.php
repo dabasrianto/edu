@@ -14,6 +14,14 @@ class ProductForm
                     \Filament\Forms\Components\TextInput::make('name')
                         ->required()
                         ->maxLength(255),
+                    \Filament\Forms\Components\Select::make('type')
+                        ->options([
+                            'physical' => 'Fisik',
+                            'digital' => 'Digital',
+                        ])
+                        ->required()
+                        ->default('physical')
+                        ->reactive(),
                     \Filament\Forms\Components\TextInput::make('price')
                         ->required()
                         ->numeric()
@@ -26,7 +34,22 @@ class ProductForm
                     \Filament\Forms\Components\Textarea::make('description')
                         ->rows(3)
                         ->columnSpanFull(),
-                ])->columns(2),
+                ])->columns(3),
+
+                \Filament\Schemas\Components\Section::make('Digital Product')
+                    ->schema([
+                        \Filament\Forms\Components\FileUpload::make('file_path')
+                            ->label('File Produk Digital')
+                            ->disk('public')
+                            ->directory('digital-products')
+                            ->helperText('Upload file (PDF, ZIP, dll) untuk produk digital.'),
+                        \Filament\Forms\Components\TextInput::make('download_url')
+                            ->label('URL Download Eksternal')
+                            ->url()
+                            ->helperText('Atau masukkan link download eksternal.'),
+                    ])
+                    ->columns(2)
+                    ->visible(fn ($get) => $get('type') === 'digital'),
 
                 \Filament\Schemas\Components\Section::make('Stats')->schema([
                     \Filament\Forms\Components\TextInput::make('rating')

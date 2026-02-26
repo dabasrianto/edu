@@ -31,8 +31,8 @@
                                 Wajib</span>
                         </div>
 
-                        <div class="space-y-3">
-                        <div class="space-y-3">
+                        <div class="space-y-3 md:grid md:grid-cols-2 md:gap-4 md:space-y-0">
+                        <div class="space-y-3 md:col-span-2 md:grid md:grid-cols-2 md:gap-4 md:space-y-0">
                             @if(isset($quizzes) && count($quizzes) > 0)
                                 @foreach($quizzes as $quiz)
                                 <div
