@@ -4,6 +4,9 @@ namespace App\Services;
 
 use Illuminate\Support\Facades\Http;
 use Filament\Notifications\Notification;
+use Laravel\Ai\Messages\UserMessage;
+use Laravel\Ai\Messages\AssistantMessage;
+use function Laravel\Ai\agent;
 
 class AiService
 {
@@ -129,82 +132,52 @@ class AiService
     
     public function chat(string $provider, string $apiKey, string $model, array $messages, ?string $systemPrompt = null)
     {
-        return match ($provider) {
-            'gemini' => $this->chatGemini($apiKey, $model, $messages, $systemPrompt),
-            'openai', 'groq', 'qwen' => $this->chatOpenAiCompatible($provider, $apiKey, $model, $messages, $systemPrompt),
-            default => 'Provider not supported.',
-        };
-    }
+        // Set API Key dynamically for the provider
+        config(["ai.providers.{$provider}.key" => $apiKey]);
 
-    protected function chatGemini(string $apiKey, string $model, array $messages, ?string $systemPrompt = null)
-    {
-        try {
-            $contents = collect($messages)->map(fn($m) => [
-                'role' => $m['role'] === 'user' ? 'user' : 'model',
-                'parts' => [['text' => $m['content']]]
-            ])->toArray();
+        // Extract history and the last user prompt
+        $history = [];
+        $lastMessage = '';
 
-            $payload = ['contents' => $contents];
-            
-            if ($systemPrompt) {
-                $payload['system_instruction'] = [
-                    'parts' => [['text' => $systemPrompt]]
-                ];
-            }
-
-            $pendingRequest = Http::asJson();
-            if (app()->environment('local')) {
-                $pendingRequest->withoutVerifying();
-            }
-
-            $response = $pendingRequest->post("https://generativelanguage.googleapis.com/v1beta/models/{$model}:generateContent?key={$apiKey}", $payload);
-
-            if ($response->successful()) {
-                return $response->json()['candidates'][0]['content']['parts'][0]['text'] ?? 'No response from Gemini.';
-            }
-            
-            \Log::error("Gemini Chat Error: " . $response->body());
-            return "Gemini Error: " . ($response->json()['error']['message'] ?? $response->body());
-        } catch (\Exception $e) {
-            \Log::error("Gemini Chat Exception: " . $e->getMessage());
-            return "Gemini Exception: " . $e->getMessage();
+        if (empty($messages)) {
+            return 'No messages provided.';
         }
-    }
 
-    protected function chatOpenAiCompatible(string $provider, string $apiKey, string $model, array $messages, ?string $systemPrompt = null)
-    {
-        $baseUrl = match($provider) {
-            'openai' => 'https://api.openai.com/v1',
-            'groq' => 'https://api.groq.com/openai/v1',
-            'qwen' => 'https://dashscope.aliyuncs.com/compatible-mode/v1',
-        };
-        
-        $finalMessages = $messages;
-        if ($systemPrompt) {
-            array_unshift($finalMessages, ['role' => 'system', 'content' => $systemPrompt]);
+        // Assume the last message is the new prompt from the user
+        $lastItem = array_pop($messages);
+        if ($lastItem['role'] === 'user') {
+            $lastMessage = $lastItem['content'];
+        } else {
+            // If the last message is not from user, it might be a continuation or error.
+            // For now, treat it as the prompt if it has content.
+            $lastMessage = $lastItem['content'];
+        }
+
+        // Build history objects
+        foreach ($messages as $msg) {
+            if ($msg['role'] === 'user') {
+                $history[] = new UserMessage($msg['content']);
+            } elseif (in_array($msg['role'], ['assistant', 'model'])) {
+                $history[] = new AssistantMessage($msg['content']);
+            }
         }
 
         try {
-            $pendingRequest = Http::withToken($apiKey);
-            if (app()->environment('local')) {
-                $pendingRequest->withoutVerifying();
-            }
+            $response = agent(
+                instructions: $systemPrompt ?? 'You are a helpful assistant.',
+                messages: $history
+            )->prompt(
+                prompt: $lastMessage,
+                provider: $provider,
+                model: $model
+            );
 
-            $response = $pendingRequest->post("{$baseUrl}/chat/completions", [
-                'model' => $model,
-                'messages' => $finalMessages,
-            ]);
-
-            if ($response->successful()) {
-                return $response->json()['choices'][0]['message']['content'] ?? 'No response.';
-            }
-
-            \Log::error("{$provider} Chat Error: " . $response->body());
-            $error = $response->json();
-            return "{$provider} Error: " . ($error['error']['message'] ?? $response->body());
+            return $response->text;
         } catch (\Exception $e) {
-            \Log::error("{$provider} Chat Exception: " . $e->getMessage());
-            return "{$provider} Exception: " . $e->getMessage();
+            \Log::error("AI SDK Error ({$provider}): " . $e->getMessage());
+            return "Error: " . $e->getMessage();
         }
     }
+
+
 }

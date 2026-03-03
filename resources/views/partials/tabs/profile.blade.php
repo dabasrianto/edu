@@ -7,9 +7,9 @@
                 <!-- Header Profil -->
                 <div class="bg-blue-900 text-white p-6 pb-20 relative overflow-hidden">
                     <div class="relative z-10 flex items-center space-x-4">
-                        <div class="w-16 h-16 rounded-full border-2 border-white/30 bg-white/10 flex items-center justify-center text-xl font-bold overflow-hidden">
+                        <div class="w-16 h-16 rounded-full border-2 border-white/30 bg-white/10 flex items-center justify-center text-xl font-bold overflow-hidden" style="width: 64px; height: 64px;">
                             @if(Auth::user()->avatar)
-                                <img src="{{ asset('storage/' . Auth::user()->avatar) }}" class="w-full h-full object-cover">
+                                <img src="{{ asset('storage/' . Auth::user()->avatar) }}" class="w-full h-full object-cover" style="width: 100%; height: 100%; object-fit: cover;">
                             @else
                                 {{ substr(Auth::user()->name, 0, 2) }}
                             @endif

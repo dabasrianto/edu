@@ -128,9 +128,6 @@ class HomeController extends Controller
 
         $quizzesJson = $quizzes;
 
-        // Check if AI chatbot has an active configuration
-        $aiChatEnabled = \App\Models\AiSetting::where('is_active', true)->exists();
-
         return view('app', compact(
             'banners', 
             'appSettings', 
@@ -144,8 +141,7 @@ class HomeController extends Controller
             'depositHistory', 
             'homePosts', 
             'blogPosts', 
-            'products',
-            'aiChatEnabled'
+            'products'
         ));
     }
 }

@@ -22,8 +22,10 @@ use App\Http\Controllers\ProductMessageController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\TopUpController;
 use App\Http\Controllers\AiChatController;
+use App\Http\Controllers\ManifestController;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
+Route::get('/manifest.json', [ManifestController::class, 'index'])->name('manifest');
 
 Route::get('/leaderboard/load-more', [LeaderboardController::class, 'loadMore'])->name('leaderboard.loadMore');
 

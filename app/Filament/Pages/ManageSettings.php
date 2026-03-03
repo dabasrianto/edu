@@ -54,57 +54,78 @@ class ManageSettings extends Page implements HasForms
                     ->tabs([
                         Tabs\Tab::make('Identity')
                             ->schema([
-                                Forms\Components\FileUpload::make('logo_path')
-                                    ->label('Logo')
-                                    ->image()
-                                    ->disk('public')
-                                    ->directory('logos'),
-                                Forms\Components\FileUpload::make('favicon_path')
-                                    ->label('Favicon')
-                                    ->image()
-                                    ->disk('public')
-                                    ->directory('favicons'),
-                                Forms\Components\TextInput::make('login_header_text')
-                                    ->label('Login Page Header')
-                                    ->default('Login Pengguna')
-                                    ->helperText('Text shown on the login page header.'),
-                                Forms\Components\TextInput::make('app_name')
-                                    ->label('App Name')
-                                    ->default('Edu HSI')
-                                    ->helperText('App Name shown on login page.'),
-                                Forms\Components\TextInput::make('app_slogan')
-                                    ->label('App Slogan')
-                                    ->default('Belajar Kapanpun, Dimanapun')
-                                    ->helperText('App Slogan shown on login page.'),
+                                Section::make('Brand Identity')
+                                    ->description('Logo and App Name Configuration')
+                                    ->schema([
+                                        Grid::make(2)
+                                            ->schema([
+                                                Forms\Components\FileUpload::make('logo_path')
+                                                    ->label('Logo')
+                                                    ->image()
+                                                    ->disk('public')
+                                                    ->directory('logos')
+                                                    ->imageEditor(),
+                                                Forms\Components\FileUpload::make('favicon_path')
+                                                    ->label('Favicon')
+                                                    ->image()
+                                                    ->disk('public')
+                                                    ->directory('favicons')
+                                                    ->imageEditor(),
+                                            ]),
+                                        Grid::make(2)
+                                            ->schema([
+                                                Forms\Components\TextInput::make('app_name')
+                                                    ->label('App Name')
+                                                    ->default('Edu HSI')
+                                                    ->required(),
+                                                Forms\Components\TextInput::make('app_slogan')
+                                                    ->label('App Slogan')
+                                                    ->default('Belajar Kapanpun, Dimanapun'),
+                                                Forms\Components\TextInput::make('login_header_text')
+                                                    ->label('Login Page Header')
+                                                    ->default('Login Pengguna')
+                                                    ->columnSpanFull(),
+                                            ]),
+                                    ]),
                             ]),
                         Tabs\Tab::make('Appearance')
                             ->schema([
-                                Forms\Components\Select::make('theme_color')
-                                    ->options([
-                                        'blue' => 'Blue',
-                                        'red' => 'Red',
-                                        'emerald' => 'Emerald',
-                                        'purple' => 'Purple',
-                                        'gray' => 'Grayscale',
-                                        'orange' => 'Orange',
-                                        'amber' => 'Amber',
-                                        'teal' => 'Teal',
-                                        'cyan' => 'Cyan',
-                                        'indigo' => 'Indigo',
-                                        'rose' => 'Rose',
-                                        'pink' => 'Pink',
-                                    ])
-                                    ->required()
-                                    ->default('blue'),
-                                Forms\Components\Select::make('font_family')
-                                    ->options([
-                                        'Inter' => 'Inter',
-                                        'Roboto' => 'Roboto',
-                                        'Poppins' => 'Poppins',
-                                        'Serif' => 'Serif',
-                                    ])
-                                    ->required()
-                                    ->default('Inter'),
+                                Section::make('Visual Style')
+                                    ->schema([
+                                        Grid::make(2)
+                                            ->schema([
+                                                Forms\Components\Select::make('theme_color')
+                                                    ->label('Primary Theme Color')
+                                                    ->options([
+                                                        'blue' => 'Blue',
+                                                        'red' => 'Red',
+                                                        'emerald' => 'Emerald',
+                                                        'purple' => 'Purple',
+                                                        'gray' => 'Grayscale',
+                                                        'orange' => 'Orange',
+                                                        'amber' => 'Amber',
+                                                        'teal' => 'Teal',
+                                                        'cyan' => 'Cyan',
+                                                        'indigo' => 'Indigo',
+                                                        'rose' => 'Rose',
+                                                        'pink' => 'Pink',
+                                                    ])
+                                                    ->required()
+                                                    ->default('blue')
+                                                    ->native(false),
+                                                Forms\Components\Select::make('font_family')
+                                                    ->label('Font Family')
+                                                    ->options([
+                                                        'Inter' => 'Inter',
+                                                        'Roboto' => 'Roboto',
+                                                        'Poppins' => 'Poppins',
+                                                        'Serif' => 'Serif',
+                                                    ])
+                                                    ->required()
+                                                    ->default('Inter')
+                                                    ->native(false),
+                                            ]),
+                                    ]),
                             ]),
                         Tabs\Tab::make('Homepage')
                             ->schema([
@@ -175,91 +196,101 @@ class ManageSettings extends Page implements HasForms
                                             ->default('Tagihan Pembelajaran'),
                                     ]),
                             ]),
-                        Tabs\Tab::make('Blog')
+                        Tabs\Tab::make('Content')
                             ->schema([
-                                Forms\Components\TextInput::make('blog_title')
-                                    ->label('Blog Page Title')
-                                    ->default('Artikel Terbaru'),
-                                Forms\Components\TextInput::make('blog_config.posts_limit')
-                                    ->label('Blog Page Limit')
-                                    ->helperText('Max number of posts to fetch for Blog Tab. Set high (e.g. 50) for "All".')
-                                    ->numeric()
-                                    ->default(20)
-                                    ->minValue(1)
-                                    ->maxValue(100),
-                            ]),
-                        Tabs\Tab::make('Academy')
-                            ->schema([
-                                Forms\Components\TextInput::make('academy_title')
-                                    ->label('Academy Title')
-                                    ->default('Akademi HSI')
-                                    ->required(),
-                                Forms\Components\TextInput::make('academy_slogan')
-                                    ->label('Academy Slogan')
-                                    ->default('Tuntutlah ilmu dari buaian hingga liang lahat.')
-                                    ->required(),
-                            ]),
-                        Tabs\Tab::make('Regular')
-                            ->schema([
-                                Forms\Components\TextInput::make('regular_title')
-                                    ->label('Regular Program Title')
-                                    ->default('Program Reguler')
-                                    ->required(),
-                                Forms\Components\TextInput::make('regular_slogan')
-                                    ->label('Regular Program Slogan')
-                                    ->default('Evaluasi pemahamanmu secara berkala.')
-                                    ->required(),
+                                Section::make('Blog Configuration')
+                                    ->schema([
+                                        Grid::make(2)
+                                            ->schema([
+                                                Forms\Components\TextInput::make('blog_title')
+                                                    ->label('Blog Page Title')
+                                                    ->default('Artikel Terbaru'),
+                                                Forms\Components\TextInput::make('blog_config.posts_limit')
+                                                    ->label('Blog Page Limit')
+                                                    ->helperText('Max posts to fetch.')
+                                                    ->numeric()
+                                                    ->default(20),
+                                            ]),
+                                    ]),
+                                Section::make('Program Titles & Slogans')
+                                    ->schema([
+                                        Grid::make(2)
+                                            ->schema([
+                                                Forms\Components\TextInput::make('academy_title')
+                                                    ->label('Academy Title')
+                                                    ->default('Akademi HSI')
+                                                    ->required(),
+                                                Forms\Components\TextInput::make('academy_slogan')
+                                                    ->label('Academy Slogan')
+                                                    ->default('Tuntutlah ilmu...')
+                                                    ->required(),
+                                                Forms\Components\TextInput::make('regular_title')
+                                                    ->label('Regular Program Title')
+                                                    ->default('Program Reguler')
+                                                    ->required(),
+                                                Forms\Components\TextInput::make('regular_slogan')
+                                                    ->label('Regular Program Slogan')
+                                                    ->default('Evaluasi pemahamanmu...')
+                                                    ->required(),
+                                            ]),
+                                    ]),
                             ]),
                             Tabs\Tab::make('Payment')
                             ->schema([
-                                Forms\Components\Textarea::make('payment_config.instruction_text')
-                                    ->label('Instruksi Pembayaran')
-                                    ->helperText('Teks yang muncul di modal pembayaran.')
-                                    ->default('Silakan transfer sebesar nominal tagihan ke rekening admin, lalu upload bukti pembayarannya di sini.')
-                                    ->rows(3),
-                                Forms\Components\TextInput::make('payment_config.whatsapp_number')
-                                    ->label('Nomor WhatsApp Admin')
-                                    ->helperText('Nomor WA untuk konfirmasi (Format: 628...).')
-                                    ->default('6281234567890'),
+                                Section::make('Payment Instructions')
+                                    ->schema([
+                                        Forms\Components\Textarea::make('payment_config.instruction_text')
+                                            ->label('Instruksi Pembayaran')
+                                            ->default('Silakan transfer...')
+                                            ->rows(3),
+                                        Forms\Components\TextInput::make('payment_config.whatsapp_number')
+                                            ->label('Nomor WhatsApp Admin')
+                                            ->default('6281234567890'),
+                                    ]),
                             ]),
                         Tabs\Tab::make('Google Auth')
                             ->schema([
-                                Forms\Components\Toggle::make('google_login_enabled')
-                                    ->label('Enable Google Login')
-                                    ->default(true)
-                                    ->helperText('Turn on/off "Login with Google" button on the user login page.'),
-                                Forms\Components\TextInput::make('google_client_id')
-                                    ->label('Google Client ID')
-                                    ->placeholder('xxxx-xxxx.apps.googleusercontent.com')
-                                    ->password()
-                                    ->revealable(true)
-                                    ->columnSpanFull(),
-                                Forms\Components\TextInput::make('google_client_secret')
-                                    ->label('Google Client Secret')
-                                    ->password()
-                                    ->revealable(true)
-                                    ->columnSpanFull(),
-                                Forms\Components\Placeholder::make('callback_url')
-                                    ->label('Callback URL')
-                                    ->content(url('/auth/google/callback'))
-                                    ->helperText('Use this URL in your Google Console credentials configuration.'),
+                                Section::make('Google OAuth')
+                                    ->schema([
+                                        Forms\Components\Toggle::make('google_login_enabled')
+                                            ->label('Enable Google Login')
+                                            ->default(true),
+                                        Grid::make(2)
+                                            ->schema([
+                                                Forms\Components\TextInput::make('google_client_id')
+                                                    ->label('Client ID')
+                                                    ->password()
+                                                    ->revealable(true),
+                                                Forms\Components\TextInput::make('google_client_secret')
+                                                    ->label('Client Secret')
+                                                    ->password()
+                                                    ->revealable(true),
+                                            ]),
+                                        Forms\Components\Placeholder::make('callback_url')
+                                            ->label('Callback URL')
+                                            ->content(url('/auth/google/callback')),
+                                    ]),
                             ]),
 
                          Tabs\Tab::make('Menu')
                             ->schema([
-                                Forms\Components\Repeater::make('menu_config')
-                                    ->label('Bottom Navigation')
+                                Section::make('Mobile Navigation')
+                                    ->description('Customize the bottom navigation bar for mobile users.')
                                     ->schema([
-                                        Forms\Components\TextInput::make('id')->required(),
-                                        Forms\Components\TextInput::make('label')->required(),
-                                        Forms\Components\TextInput::make('icon')->label('Heroicon Name (e.g. heroicon-o-home)'),
-                                    ])
-                                    ->collapsed()
-                                    ->reorderable(true)
-                                    ->reorderableWithButtons(true)
-                                    ->cloneable(true)
-                                    ->itemLabel(fn (array $state): ?string => $state['label'] ?? null)
-                                    ->columns(3),
+                                        Forms\Components\Repeater::make('menu_config')
+                                            ->label('Menu Items')
+                                            ->schema([
+                                                Forms\Components\TextInput::make('id')->required(),
+                                                Forms\Components\TextInput::make('label')->required(),
+                                                Forms\Components\TextInput::make('icon')->label('Heroicon Name (e.g. heroicon-o-home)'),
+                                            ])
+                                            ->collapsed()
+                                            ->reorderable(true)
+                                            ->reorderableWithButtons(true)
+                                            ->cloneable(true)
+                                            ->itemLabel(fn (array $state): ?string => $state['label'] ?? null)
+                                            ->columns(3),
+                                    ]),
                             ]),
 
                         Tabs\Tab::make('Email (SMTP)')

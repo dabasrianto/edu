@@ -114,10 +114,12 @@
                 box-shadow: none !important;
             }
 
-            /* Tab content max width for readability */
+            /* Tab content max width for readability - REMOVED to fix large gap */
             #app-container .tab-content {
-                max-width: 1200px;
-                margin: 0 auto;
+                max-width: 100%;
+                margin: 0;
+                padding-left: 1rem;
+                padding-right: 1rem;
             }
 
             /* Hide bottom nav on desktop */

@@ -133,6 +133,10 @@ class AiSettingResource extends Resource
                     ->url()
                     ->columnSpanFull(),
                 Toggle::make('is_active')
+                    ->label('Aktifkan Provider')
+                    ->default(true),
+                Toggle::make('is_widget_active')
+                    ->label('Tampilkan Chatbot Widget')
                     ->default(true),
             ]);
     }
@@ -161,8 +165,19 @@ class AiSettingResource extends Resource
             ->recordTitleAttribute('provider')
             ->columns([
                 TextColumn::make('provider')
-                    ->searchable(),
+                    ->searchable()
+                    ->formatStateUsing(fn ($state) => match($state) {
+                        'gemini' => 'Google Gemini',
+                        'openai' => 'OpenAI',
+                        'groq' => 'Groq',
+                        'qwen' => 'Qwen (Alibaba)',
+                        default => ucfirst($state)
+                    }),
                 IconColumn::make('is_active')
+                    ->label('Active')
+                    ->boolean(),
+                IconColumn::make('is_widget_active')
+                    ->label('Widget')
                     ->boolean(),
                 TextColumn::make('created_at')
                     ->dateTime()
@@ -177,6 +192,41 @@ class AiSettingResource extends Resource
                 //
             ])
             ->recordActions([
+                Action::make('test_chat')
+                    ->label('Test Chat')
+                    ->icon('heroicon-o-chat-bubble-left-right')
+                    ->color('info')
+                    ->form([
+                        Textarea::make('message')
+                            ->label('Pesan Tes')
+                            ->required()
+                            ->rows(3)
+                            ->default('Halo, perkenalkan diri kamu.'),
+                    ])
+                    ->action(function (array $data, AiSetting $record, AiService $service) {
+                        try {
+                            $response = $service->chat(
+                                $record->provider,
+                                $record->api_key,
+                                $record->selected_model,
+                                [['role' => 'user', 'content' => $data['message']]],
+                                $record->system_prompt
+                            );
+
+                            Notification::make()
+                                ->title('Respon AI')
+                                ->body($response)
+                                ->success()
+                                ->persistent()
+                                ->send();
+                        } catch (\Exception $e) {
+                            Notification::make()
+                                ->title('Error')
+                                ->body($e->getMessage())
+                                ->danger()
+                                ->send();
+                        }
+                    }),
                 Action::make('sync_models')
                     ->label('Sync Models')
                     ->icon('heroicon-o-arrow-path')

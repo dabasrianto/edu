@@ -89,7 +89,7 @@
                         item.classList.add('flex-col');
                         
                         if(img) {
-                            img.classList.remove('w-24', 'h-24', 'flex-shrink-0', 'ml-3', 'rounded-lg');
+                            img.classList.remove('w-24', 'h-24', 'flex-shrink-0', 'mr-4', 'rounded-lg');
                             img.classList.add('aspect-video', 'w-full');
                         }
                         
@@ -102,13 +102,13 @@
                         if (layout === 'list') {
                             // Container overrides
                             item.classList.remove('flex-col');
-                            // flex-row-reverse means Image (which is 1st in DOM) goes to Right, Content to Left
-                            item.classList.add('flex-row-reverse', 'items-center', 'p-3', 'layout-list'); 
+                            // Use flex-row (Image Left) and gap for spacing
+                            item.classList.add('flex-row', 'items-center', 'p-3', 'layout-list'); 
 
                             // Image overrides
                             if(img) {
                                 img.classList.remove('aspect-video', 'w-full');
-                                img.classList.add('w-24', 'h-24', 'flex-shrink-0', 'ml-3', 'rounded-lg');
+                                img.classList.add('w-24', 'h-24', 'flex-shrink-0', 'mr-4', 'rounded-lg');
                             }
 
                             // Content overrides

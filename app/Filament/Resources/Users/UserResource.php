@@ -70,6 +70,16 @@ class UserResource extends Resource
         return $table->columns([
             Tables\Columns\TextColumn::make('name')->searchable(),
             Tables\Columns\TextColumn::make('email')->searchable(),
+            Tables\Columns\IconColumn::make('is_verified')
+                ->label('Verified')
+                ->boolean()
+                ->getStateUsing(fn (User $record) => $record->email_verified_at !== null)
+                ->trueIcon('heroicon-o-check-badge')
+                ->falseIcon('heroicon-o-x-circle')
+                ->colors([
+                    'success' => true,
+                    'danger' => false,
+                ]),
             Tables\Columns\BadgeColumn::make('role')
                 ->colors([
                     'secondary' => 'user',
@@ -105,6 +115,24 @@ class UserResource extends Resource
                 ->requiresConfirmation()
                 ->visible(fn (User $record) => $record->is_active)
                 ->action(fn (User $record) => $record->update(['is_active' => false])),
+
+            // Verify Email Action
+            Action::make('verify_email')
+                ->label('Verify Email')
+                ->icon('heroicon-o-check-badge')
+                ->color('success')
+                ->requiresConfirmation()
+                ->visible(fn (User $record) => $record->email_verified_at === null)
+                ->action(fn (User $record) => $record->update(['email_verified_at' => now()])),
+
+            // Unverify Email Action
+            Action::make('unverify_email')
+                ->label('Unverify Email')
+                ->icon('heroicon-o-x-circle')
+                ->color('warning')
+                ->requiresConfirmation()
+                ->visible(fn (User $record) => $record->email_verified_at !== null)
+                ->action(fn (User $record) => $record->update(['email_verified_at' => null])),
         ])
         ->bulkActions([
             \Filament\Actions\DeleteBulkAction::make(),

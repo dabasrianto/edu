@@ -116,9 +116,9 @@
             <div class="p-4 border-t border-gray-100">
                 @auth
                 <div class="flex items-center space-x-3">
-                    <div class="w-9 h-9 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold text-xs overflow-hidden flex-shrink-0">
+                    <div class="w-9 h-9 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold text-xs overflow-hidden flex-shrink-0" style="width: 36px; height: 36px;">
                         @if(Auth::user()->avatar)
-                            <img src="{{ asset('storage/' . Auth::user()->avatar) }}" class="w-full h-full object-cover">
+                            <img src="{{ asset('storage/' . Auth::user()->avatar) }}" class="w-full h-full object-cover" style="width: 100%; height: 100%; object-fit: cover;">
                         @else
                             {{ substr(Auth::user()->name, 0, 2) }}
                         @endif
@@ -206,13 +206,6 @@
     
     <!-- SCRIPTS -->
     @include('partials.scripts')
-
-    <script>
-        function toggleAiChat() {
-            const el = document.getElementById('ai-chat-window');
-            if(el) el.classList.toggle('hidden');
-        }
-    </script>
 
 </body>
 </html>
